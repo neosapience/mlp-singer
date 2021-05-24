@@ -41,7 +41,6 @@ class Trainer(BaseTrainer):
         self.model.eval()
 
         for batch in tqdm(self.valid_loader, leave=False):
-            self.iteration += 1
             pitch, text, mel = to_device(batch, self.device)
 
             pred = self.model(pitch, text)
