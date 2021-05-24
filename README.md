@@ -126,24 +126,24 @@ This implementation was inspired by the following repositories.
 
 ```bibtex
 @misc{tolstikhin2021mlpmixer,
-      title={MLP-Mixer: An all-MLP Architecture for Vision}, 
-      author={Ilya Tolstikhin and Neil Houlsby and Alexander Kolesnikov and Lucas Beyer and Xiaohua Zhai and Thomas Unterthiner and Jessica Yung and Andreas Steiner and Daniel Keysers and Jakob Uszkoreit and Mario Lucic and Alexey Dosovitskiy},
-      year={2021},
-      eprint={2105.01601},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+  title={MLP-Mixer: An all-MLP Architecture for Vision}, 
+  author={Ilya Tolstikhin and Neil Houlsby and Alexander Kolesnikov and Lucas Beyer and Xiaohua Zhai and Thomas Unterthiner and Jessica Yung and Andreas Steiner and Daniel Keysers and Jakob Uszkoreit and Mario Lucic and Alexey Dosovitskiy},
+  year={2021},
+  eprint={2105.01601},
+  archivePrefix={arXiv},
+  primaryClass={cs.CV}
 }
 ```
 
 ```bibtex
 @inproceedings{NEURIPS2020_c5d73680,
- author = {Kong, Jungil and Kim, Jaehyeon and Bae, Jaekyoung},
- booktitle = {Advances in Neural Information Processing Systems},
- editor = {H. Larochelle and M. Ranzato and R. Hadsell and M. F. Balcan and H. Lin},
- pages = {17022--17033},
- publisher = {Curran Associates, Inc.},
- title = {HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis},
- volume = {33},
- year = {2020}
+  author = {Kong, Jungil and Kim, Jaehyeon and Bae, Jaekyoung},
+  booktitle = {Advances in Neural Information Processing Systems},
+  editor = {H. Larochelle and M. Ranzato and R. Hadsell and M. F. Balcan and H. Lin},
+  pages = {17022--17033},
+  publisher = {Curran Associates, Inc.},
+  title = {HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis},
+  volume = {33},
+  year = {2020}
 }
 ```
