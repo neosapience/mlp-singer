@@ -36,35 +36,57 @@ You can train the model on any custom dataset of your choice, as long as it incl
 
 The directory names correspond to file extensions. We have included a sample as reference.
 
+## Preprocessing
+
+Once you have prepared the dataset, run 
+
+```
+python -m data.serialize
+```
+
+from the root directory. This will create `data/bin` that contains binary files used for training. This repository already contains example binary files created from the sample in `data/raw`. 
+
 ## Training
 
 To train the model, run
 
 ```
-python train.py --config_path configs/config.json
+python train.py
 ```
 
-`default.json` is a configuration file that includes various hyperparameters that define a training pipeline. Running this command will create a folder under the `checkpoints` directory according to the `name` field specified in the configuration file.
+This will read the default configuration file located in `configs/model.json` to initialize the model. Alternatively, you could create a new configuration file and train the model via
 
-You can also continue training from a checkpoint. For example, to resume training from the provided pretrained model checkpoint, type
+```
+python train.py --config_path PATH/TO/CONFIG.json
+```
+
+Running this command will create a folder under the `checkpoints` directory according to the `name` field specified in the configuration file.
+
+You can also continue training from a checkpoint. For example, to resume training from the provided pretrained model checkpoint, run
 
 ```
 python train.py --checkpoint_path PATH/TO/CHECKPOINT.pt
 ```
 
-Unless explicitly specified via a `--config_path` flag, the script will read `config.json` in the checkpoint directory. 
-
-In both cases, model checkpoints will be saved regularly according to the interval defined in the configuration file. 
+Unless explicitly specified via a `--config_path` flag, the script will read `config.json` in the checkpoint directory. In both cases, model checkpoints will be saved regularly according to the interval defined in the configuration file. 
 
 ## Inference
 
-MLP Singer produces mel-spectrograms, which are then fed into a neural vocoder to generate raw waveforms. We use HiFi-GAN as the vocoder backend. 
+MLP Singer produces mel-spectrograms, which are then fed into a neural vocoder to generate raw waveforms. We use [HiFi-GAN](https://github.com/jik876/hifi-gan) as the vocoder backend, but you could also plug other vocoders like [WaveGlow](https://github.com/NVIDIA/waveglow).
 
 ```
 python inference.py --checkpoint_path PATH/TO/CHECKPOINT.pt
 ```
 
-This will create `.wav` samples in the `samples` directory, and mel-spectrogram files as `.npy` files in `hifi-gan/test_mel_dirs`. 
+This will create `.wav` samples in the `samples` directory, and save mel-spectrogram files as `.npy` files in `hifi-gan/test_mel_dirs`. 
+
+You can also specify any song you want to perform inference on, as long as the song is present in `data/raw`. 
+
+```
+python inference.py --checkpoint_path PATH/TO/CHECKPOINT.pt --song little_star
+```
+
+The argument to the `--song` flag should match the title of the song as it is saved in `data/raw`.  
 
 ## Acknowledgements
 
