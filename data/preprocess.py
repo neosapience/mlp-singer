@@ -51,13 +51,6 @@ class Preprocessor:
         return notes, phonemes
 
 
-def find_silence(tensor):
-    for i, val in enumerate(reversed(tensor)):
-        if val != 0:
-            return i
-    raise ValueError("Invalid notes tensor containing only silence")
-
-
 def get_phonemes(text_path, split_newline=False):
     with open(text_path) as f:
         text = f.read().splitlines()

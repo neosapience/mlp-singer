@@ -4,21 +4,25 @@ Official implementation of MLP Singer: An All-MLP Architecture for Parallel Kore
 
 ## Introduction
 
-We present MLP Singer, an all-MLP architecture for parallel Korean singing voice synthesis. This work is directly inspired by recent works that use multi-layer perceptrons to replace computationally costly self-attention layers in transformers. We extend discriminative MLP architectures proposed in the computer vision literature to build a generative model that outputs mel-spectrograms given lyrics text and a corresponding quantized pitch sequence as discrete MIDI notes. To the best of our knowledge, this is the first work that uses an entirely MLP-based architecture for voice synthesis. The proposed system serves as a strong baseline, achieving comparable performance to auto-regressive and GAN-based SVS systems with fraction of their number of parameters and orders of magnitude quicker training and inference speed.
+We present MLP Singer, an all-MLP architecture for parallel Korean singing voice synthesis. This work is inspired by recent works that use multi-layer perceptrons to replace computationally costly self-attention layers in transformers. We extend discriminative MLP architectures proposed in the computer vision literature to build a generative model that outputs mel-spectrograms given lyrics text and MIDI notes. To the best of our knowledge, this is the first work that uses an entirely MLP-based architecture for voice synthesis. The proposed system serves as a strong baseline, achieving comparable performance to auto-regressive and GAN-based SVS systems with fraction of their number of parameters and orders of magnitude quicker training and inference speed.
 
 ## Quickstart
 
-Install project requirements.
+Clone the repository including the git submodule, then install package requirements.
 
 ```
+git clone --recurse-submodules https://github.com/neosapience/mlp-singer.git
+cd mlp-singer
 pip install -r requirements.txt
 ```
 
-To generate audio files, run 
+To generate audio files with the trained model checkpoint, [download](https://drive.google.com/drive/folders/1YuOoV3lO2-Hhn1F2HJ2aQ4S0LC1JdKLd) HiFi-GAN checkpoint and configuration files and place them in `hifi-gan`. Then, run inference via
 
 ```
-python inference.py --checkpoint_path PATH/TO/CHECKPOINT.pt
+python inference.py --checkpoint_path checkpoints/default/model.pt
 ```
+
+Generated audio samples are saved in the `samples` directory.
 
 ## Dataset
 
@@ -54,7 +58,7 @@ To train the model, run
 python train.py
 ```
 
-This will read the default configuration file located in `configs/model.json` to initialize the model. Alternatively, you could create a new configuration file and train the model via
+This will read the default configuration file located in `configs/model.json` to initialize the model. Alternatively, you can also create a new configuration and train the model via
 
 ```
 python train.py --config_path PATH/TO/CONFIG.json
@@ -72,7 +76,7 @@ Unless explicitly specified via a `--config_path` flag, the script will read `co
 
 ## Inference
 
-MLP Singer produces mel-spectrograms, which are then fed into a neural vocoder to generate raw waveforms. We use [HiFi-GAN](https://github.com/jik876/hifi-gan) as the vocoder backend, but you could also plug other vocoders like [WaveGlow](https://github.com/NVIDIA/waveglow).
+MLP Singer produces mel-spectrograms, which are then fed into a neural vocoder to generate raw waveforms. We use [HiFi-GAN](https://github.com/jik876/hifi-gan) as the vocoder backend, but you can also plug other vocoders like [WaveGlow](https://github.com/NVIDIA/waveglow).
 
 ```
 python inference.py --checkpoint_path PATH/TO/CHECKPOINT.pt
@@ -95,7 +99,6 @@ This implementation was inspired by the following repositories.
 * [Tacotron2](https://github.com/NVIDIA/tacotron2)
 * [BEGANSing](https://github.com/SoonbeomChoi/BEGANSing)
 * [pytorch-saltnet](https://github.com/tugstugi/pytorch-saltnet)
-* [hifi-gan](https://github.com/jik876/hifi-gan)
 
 
 ## Citations
