@@ -2,7 +2,6 @@ import bisect
 import os
 
 import torch
-from torch.utils import data
 from torch.utils.data import DataLoader, Dataset
 
 
