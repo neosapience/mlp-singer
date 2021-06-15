@@ -15,12 +15,15 @@ from utils import load_config, load_model, make_directory, set_seed
 
 @torch.no_grad()
 def main(args):
+    device = args.device
+    assert device in {"cpu", "cuda"}, "device must be one of `cpu` or `cuda`"
     save_path = args.save_path
     make_directory(save_path)
     make_directory(args.mel_path)
     model = load_model(args.checkpoint_path, eval=True)
     preprocessor_config = load_config(args.preprocessor_config_path)
     preprocessor = Preprocessor(preprocessor_config)
+    mel_dim = preprocessor_config.n_mel_channels
     song = args.song
     data_path = args.data_path
     notes, phonemes = preprocessor.prepare_inference(
@@ -30,20 +33,28 @@ def main(args):
     chunk_size = model.seq_len
     preds = []
     total_len = len(notes)
-    notes = notes.unsqueeze(0)
-    phonemes = phonemes.unsqueeze(0)
-    num_chunks, remainder = divmod(total_len, chunk_size)
-    for j in range(num_chunks):
-        start = j * chunk_size
-        end = start + chunk_size
-        pred = model(notes[:, start:end], phonemes[:, start:end],)
-        preds.append(pred)
-    preds = torch.cat(tuple(preds), dim=1)
+    notes = notes.to(device)
+    phonemes = phonemes.to(device)
+    remainder = total_len % chunk_size
     if remainder:
-        last = model(notes[:, -chunk_size:], phonemes[:, -chunk_size:])
-        preds = torch.cat((preds[:, : -(chunk_size - remainder)], last), dim=1)
-    assert preds.size(1) == total_len
-    preds = preds.transpose(1, 2)
+        pad_size = chunk_size - remainder
+        padding = torch.zeros(pad_size, dtype=int).to(device)
+        phonemes = torch.cat((phonemes, padding))
+        notes = torch.cat((notes, padding))
+        # phonemes = torch.cat((padding, phonemes))
+        # notes = torch.cat((padding, notes))
+        batch_phonemes = phonemes.reshape(-1, chunk_size)
+        batch_notes = notes.reshape(-1, chunk_size)
+        preds = model(batch_notes, batch_phonemes)
+        preds = preds.reshape(-1, mel_dim)[:-pad_size]
+        # preds = preds.reshape(-1, mel_dim)
+    else:
+        batch_phonemes = phonemes.reshape(-1, chunk_size)
+        batch_notes = notes.reshape(-1, chunk_size)
+        preds = model(batch_notes, batch_phonemes)
+        mel_dim = preds.size(-1)
+        preds = preds.reshape(-1, mel_dim)
+    preds = preds.transpose(0, 1).unsqueeze(0)
     np.save(os.path.join(args.mel_path, f"{song}.npy"), preds.numpy())
     subprocess.call(
         f"cd hifi-gan; python inference_e2e.py --checkpoint_file {args.hifi_gan} --output_dir ../{save_path}",
@@ -53,6 +64,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--device", type=str, default="cpu", help="device to use")
     parser.add_argument(
         "--mel_path",
         type=str,
