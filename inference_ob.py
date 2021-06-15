@@ -35,22 +35,25 @@ def main(args):
     total_len = len(notes)
     notes = notes.to(device)
     phonemes = phonemes.to(device)
-    remainder = total_len % chunk_size
+    total_len = len(notes) - chunk_size
+    frames_to_drop = args.num_overlap
+    step = chunk_size - 2 * frames_to_drop
+    remainder = total_len % step
+    pad_size = 0
     if remainder:
-        pad_size = chunk_size - remainder
+        pad_size = step - remainder
         padding = torch.zeros(pad_size, dtype=int).to(device)
         phonemes = torch.cat((phonemes, padding))
         notes = torch.cat((notes, padding))
-        batch_phonemes = phonemes.reshape(-1, chunk_size)
-        batch_notes = notes.reshape(-1, chunk_size)
-        preds = model(batch_notes, batch_phonemes)
-        preds = preds.reshape(-1, mel_dim)[:-pad_size]
-    else:
-        batch_phonemes = phonemes.reshape(-1, chunk_size)
-        batch_notes = notes.reshape(-1, chunk_size)
-        preds = model(batch_notes, batch_phonemes)
-        mel_dim = preds.size(-1)
-        preds = preds.reshape(-1, mel_dim)
+    notes = notes.unfold(size=chunk_size, step=step, dimension=0)
+    phonemes = phonemes.unfold(size=chunk_size, step=step, dimension=0)
+    preds = model(notes, phonemes)
+    mel_dim = preds.size(-1)
+    first = preds[0][:-frames_to_drop]
+    last = preds[-1][frames_to_drop:-pad_size]
+    preds = preds[1:-1, frames_to_drop:-frames_to_drop]
+    preds = preds.reshape(-1, mel_dim)
+    preds = torch.cat((first, preds, last))
     preds = preds.transpose(0, 1).unsqueeze(0)
     np.save(os.path.join(args.mel_path, f"{song}.npy"), preds.numpy())
     subprocess.call(
@@ -62,6 +65,9 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--device", type=str, default="cpu", help="device to use")
+    parser.add_argument(
+        "--num_overlap", type=int, default=30, help="number of overlapping frames"
+    )
     parser.add_argument(
         "--mel_path",
         type=str,
