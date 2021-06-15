@@ -15,7 +15,9 @@ from utils import load_config, load_model, make_directory, set_seed
 
 @torch.no_grad()
 def main(args):
-    make_directory(args.save_path)
+    save_path = args.save_path
+    make_directory(save_path)
+    make_directory(args.mel_path)
     model = load_model(args.checkpoint_path, eval=True)
     preprocessor_config = load_config(args.preprocessor_config_path)
     preprocessor = Preprocessor(preprocessor_config)
@@ -42,9 +44,9 @@ def main(args):
         preds = torch.cat((preds[:, : -(chunk_size - remainder)], last), dim=1)
     assert preds.size(1) == total_len
     preds = preds.transpose(1, 2)
-    np.save(os.path.join(args.save_path, f"{song}.npy"), preds.numpy())
+    np.save(os.path.join(args.mel_path, f"{song}.npy"), preds.numpy())
     subprocess.call(
-        f"cd hifi-gan; python inference_e2e.py --checkpoint_file {args.hifi_gan} --output_dir ../samples",
+        f"cd hifi-gan; python inference_e2e.py --checkpoint_file {args.hifi_gan} --output_dir ../{save_path}",
         shell=True,
     )
 
@@ -52,13 +54,22 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--save_path",
+        "--mel_path",
         type=str,
         default=os.path.join("hifi-gan", "test_mel_files"),
+        help="path to save synthesized mel-spectrograms",
+    )
+    parser.add_argument(
+        "--save_path",
+        type=str,
+        default="samples",
         help="path to save synthesized .wav file",
     )
     parser.add_argument(
-        "--checkpoint_path", type=str, default="", help="path to checkpoint file",
+        "--checkpoint_path",
+        type=str,
+        default="checkpoints/default/model.pt",
+        help="path to checkpoint file",
     )
     parser.add_argument(
         "--hifi_gan",
