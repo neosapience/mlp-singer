@@ -67,7 +67,7 @@ class TacotronSTFT(torch.nn.Module):
         source_rate, audio = read(path)
         audio = torch.FloatTensor(audio.astype(np.float32))
         if audio.ndim > 1 and len(audio) > 1:
-            audio = audio[:, 0]
+            audio = audio.mean(-1)
         if source_rate != self.sampling_rate:
             resample = torchaudio.transforms.Resample(source_rate, self.sampling_rate)
             audio = resample(audio)

@@ -7,7 +7,7 @@ from torchaudio.transforms import Resample, Spectrogram
 def load(path, sample_rate=22050):
     waveform, source_rate = torchaudio.load(path)
     if len(waveform) > 1:
-        waveform = waveform[0]
+        waveform = waveform.mean(dim=0)
     if source_rate != sample_rate:
         resample = Resample(source_rate, sample_rate)
         waveform = resample(waveform)
