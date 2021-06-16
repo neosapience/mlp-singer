@@ -1,32 +1,49 @@
 # MLP Singer
 
-Official implementation of MLP Singer: An All-MLP Architecture for Parallel Korean Singing Voice Synthesis.
+Official implementation of [MLP Singer: Towards Rapid Parallel Korean Singing Voice Synthesis](https://arxiv.org/abs/2106.07886).
 
-## Introduction
+## Abstract
 
-We present MLP Singer, an all-MLP architecture for parallel Korean singing voice synthesis. This work is inspired by recent works that use multi-layer perceptrons to replace computationally costly self-attention layers in transformers. We extend discriminative MLP architectures proposed in the computer vision literature to build a generative model that outputs mel-spectrograms given lyrics text and MIDI notes. To the best of our knowledge, this is the first work that uses an entirely MLP-based architecture for voice synthesis. The proposed system serves as a strong baseline, achieving comparable performance to auto-regressive and GAN-based SVS systems with fraction of their number of parameters and orders of magnitude quicker training and inference speed.
+> Recent developments in deep learning have significantly improved the quality of synthesized singing voice audio. However, prominent neural singing voice synthesis systems suffer from slow inference speed due to their autoregressive design. Inspired by MLP-Mixer, a novel architecture introduced in the vision literature for attention-free image classification, we propose MLP Singer, a parallel Korean singing voice synthesis system. To the best of our knowledge, this is the first work that uses an entirely MLP-based architecture for voice synthesis. Listening tests demonstrate that MLP Singer outperforms a larger autoregressive GAN-based system, both in terms of audio quality and synthesis speed. In particular, MLP Singer achieves a real-time factor of up to 200 and 3400 on CPUs and GPUs respectively, enabling order of magnitude faster generation on both environments.
+
+## Citation
+
+Please cite this work as follows.
+
+```bibtex
+@misc{tae2021mlp,
+      title={MLP Singer: Towards Rapid Parallel Korean Singing Voice Synthesis}, 
+      author={Jaesung Tae and Hyeongju Kim and Younggun Lee},
+      year={2021},
+}
+```
 
 ## Quickstart
 
-Clone the repository including the git submodule, then install package requirements.
+1. Clone the repository including the git submodule.
 
-```
-git clone --recurse-submodules https://github.com/neosapience/mlp-singer.git
-cd mlp-singer
-pip install -r requirements.txt
-```
+   ```bash
+   git clone --recurse-submodules https://github.com/neosapience/mlp-singer.git
+   ```
 
-To generate audio files with the trained model checkpoint, [download](https://drive.google.com/drive/folders/1YuOoV3lO2-Hhn1F2HJ2aQ4S0LC1JdKLd) HiFi-GAN checkpoint and configuration files and place them in `hifi-gan`. Then, run inference via
+2.  Install package requirements.
 
-```
-python inference.py --checkpoint_path checkpoints/default/model.pt
-```
+   ```bash
+   cd mlp-singer
+   pip install -r requirements.txt
+   ```
 
-Generated audio samples are saved in the `samples` directory.
+3. To generate audio files with the trained model checkpoint, [download](https://drive.google.com/drive/folders/1YuOoV3lO2-Hhn1F2HJ2aQ4S0LC1JdKLd) the HiFi-GAN checkpoint along with its configuration file and place them in `hifi-gan`. 
+
+4. Run inference using the following command. Generated audio samples are saved in the `samples` directory by default.
+
+   ```bash
+   python inference.py --checkpoint_path checkpoints/default/model.pt
+   ```
 
 ## Dataset
 
-We used the [Children Song Dataset](https://github.com/emotiontts/emotiontts_open_db/tree/master/Dataset/CSD), a to-be open-source singing voice dataset comprised of 100 annotated Korean and English children songs sung by a single professional singer. We used only the Korean subset of the dataset to train the model.
+We used the [Children Song Dataset](https://github.com/emotiontts/emotiontts_open_db/tree/master/Dataset/CSD), an open-source singing voice dataset comprised of 100 annotated Korean and English children songs sung by a single professional singer. We used only the Korean subset of the dataset to train the model.
 
 You can train the model on any custom dataset of your choice, as long as it includes lyrics text, midi transcriptions, and monophonic a capella audio file triplets. These files should be titled identically, and should also be placed in specific directory locations as shown below.
 
@@ -69,28 +86,22 @@ Running this command will create a folder under the `checkpoints` directory acco
 You can also continue training from a checkpoint. For example, to resume training from the provided pretrained model checkpoint, run
 
 ```
-python train.py --checkpoint_path PATH/TO/CHECKPOINT.pt
+python train.py --checkpoint_path /checkpoints/default/model.pt
 ```
 
-Unless explicitly specified via a `--config_path` flag, the script will read `config.json` in the checkpoint directory. In both cases, model checkpoints will be saved regularly according to the interval defined in the configuration file. 
+Unless a `--config_path` flag is explicitly provided, the script will read `config.json` in the checkpoint directory. In both cases, model checkpoints will be saved regularly according to the interval defined in the configuration file. 
 
 ## Inference
 
-MLP Singer produces mel-spectrograms, which are then fed into a neural vocoder to generate raw waveforms. We use [HiFi-GAN](https://github.com/jik876/hifi-gan) as the vocoder backend, but you can also plug other vocoders like [WaveGlow](https://github.com/NVIDIA/waveglow).
-
-```
-python inference.py --checkpoint_path PATH/TO/CHECKPOINT.pt
-```
-
-This will create `.wav` samples in the `samples` directory, and save mel-spectrogram files as `.npy` files in `hifi-gan/test_mel_dirs`. 
-
-You can also specify any song you want to perform inference on, as long as the song is present in `data/raw`. 
+MLP Singer produces mel-spectrograms, which are then fed into a neural vocoder to generate raw waveforms. This repository uses [HiFi-GAN](https://github.com/jik876/hifi-gan) as the vocoder backend, but you can also plug other vocoders like [WaveGlow](https://github.com/NVIDIA/waveglow). To generate samples, run
 
 ```
 python inference.py --checkpoint_path PATH/TO/CHECKPOINT.pt --song little_star
 ```
 
-The argument to the `--song` flag should match the title of the song as it is saved in `data/raw`.  
+This will create `.wav` samples in the `samples` directory, and save mel-spectrogram files as `.npy` files in `hifi-gan/test_mel_dirs`. 
+
+You can also specify any song you want to perform inference on, as long as the song is present in `data/raw`. The argument to the `--song` flag should match the title of the song as it is saved in `data/raw`.  
 
 ## Acknowledgements
 
@@ -98,52 +109,7 @@ This implementation was inspired by the following repositories.
 
 * [Tacotron2](https://github.com/NVIDIA/tacotron2)
 * [BEGANSing](https://github.com/SoonbeomChoi/BEGANSing)
-* [pytorch-saltnet](https://github.com/tugstugi/pytorch-saltnet)
 
+## License
 
-## Citations
-
-```bibtex
-@inproceedings{choi2020children,
-  title={Children’s Song Dataset for Singing Voice Research},
-  author={Choi, Soonbeom and Kim, Wonil and Park, Saebyul and Yong, Sangeon and Nam, Juhan},
-  booktitle={The 21th International Society for Music Information Retrieval Conference (ISMIR)},
-  year={2020},
-  organization={International Society for Music Information Retrieval}
-}
-```
-
-```bibtex
-@misc{cho2017kog2p,
-  title = {Korean Grapheme-to-Phoneme Analyzer (KoG2P)},
-  author = {Yejin Cho},
-  year = {2017},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/scarletcho/KoG2P}}
-}
-```
-
-```bibtex
-@misc{tolstikhin2021mlpmixer,
-  title={MLP-Mixer: An all-MLP Architecture for Vision}, 
-  author={Ilya Tolstikhin and Neil Houlsby and Alexander Kolesnikov and Lucas Beyer and Xiaohua Zhai and Thomas Unterthiner and Jessica Yung and Andreas Steiner and Daniel Keysers and Jakob Uszkoreit and Mario Lucic and Alexey Dosovitskiy},
-  year={2021},
-  eprint={2105.01601},
-  archivePrefix={arXiv},
-  primaryClass={cs.CV}
-}
-```
-
-```bibtex
-@inproceedings{NEURIPS2020_c5d73680,
-  author = {Kong, Jungil and Kim, Jaehyeon and Bae, Jaekyoung},
-  booktitle = {Advances in Neural Information Processing Systems},
-  editor = {H. Larochelle and M. Ranzato and R. Hadsell and M. F. Balcan and H. Lin},
-  pages = {17022--17033},
-  publisher = {Curran Associates, Inc.},
-  title = {HiFi-GAN: Generative Adversarial Networks for Efficient and High Fidelity Speech Synthesis},
-  volume = {33},
-  year = {2020}
-}
-```
+Released under the [MIT License](./LICENSE).
