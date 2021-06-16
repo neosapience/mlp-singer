@@ -1,6 +1,6 @@
 # MLP Singer
 
-Official implementation of [MLP Singer: Towards Rapid Parallel Korean Singing Voice Synthesis](https://arxiv.org/abs/2106.07886). Audio samples are available at our [demo page](https://mlpsinger.github.io).
+Official implementation of [MLP Singer: Towards Rapid Parallel Korean Singing Voice Synthesis](https://arxiv.org/abs/2106.07886). Audio samples are available on our [demo page](https://mlpsinger.github.io).
 
 ## Abstract
 
