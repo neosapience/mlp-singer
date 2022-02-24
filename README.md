@@ -8,14 +8,15 @@ Official implementation of [MLP Singer: Towards Rapid Parallel Korean Singing Vo
 
 ## Citation
 
-Please cite this work as follows.
+If you find this work useful, please cite this work as follows.
 
 ```bibtex
-@misc{tae2021mlp,
-      title={MLP Singer: Towards Rapid Parallel Korean Singing Voice Synthesis}, 
-      author={Jaesung Tae and Hyeongju Kim and Younggun Lee},
-      year={2021},
-}
+@article{tae2021mlp,
+  title={MLP Singer: Towards Rapid Parallel Korean Singing Voice Synthesis},
+  author={Jaesung Tae and Hyeongju Kim and Younggun Lee},
+  journal={2021 IEEE 31st International Workshop on Machine Learning for Signal Processing (MLSP)},
+  year={2021}
+ }
 ```
 
 ## Quickstart
